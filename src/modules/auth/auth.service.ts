@@ -33,7 +33,7 @@ export class AuthService {
       );
     const { password, ...userWithoutPassword } = user;
     const payload = { sub: userWithoutPassword.id, ...userWithoutPassword };
-    const accessToken = this.jwtService.signAsync(payload);
+    const accessToken = await this.jwtService.sign(payload);
     return {
       accessToken,
       //   user: userWithoutPassword,
