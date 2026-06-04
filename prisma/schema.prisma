@@ -11,12 +11,21 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
+enum Role {
+  ADMIN
+  MANAGER
+  CUSTOMER
+}
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
-  name      String?
+  name      String
+  phone     String?
+  role      Role     @default(CUSTOMER)
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users") // Đổi tên bảng dưới DB thành 'users' viết thường số nhiều chuẩn DB
 }
