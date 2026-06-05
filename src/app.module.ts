@@ -11,6 +11,7 @@ import { ProductModule } from './modules/product/product.module';
 import { MediaModule } from './modules/media/media.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { redisStore } from 'cache-manager-redis-yet';
     CategoryModule,
     ProductModule,
     MediaModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

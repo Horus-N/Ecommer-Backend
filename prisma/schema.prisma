@@ -23,6 +23,7 @@ model User {
   name      String
   phone     String?
   role      Role     @default(CUSTOMER)
+  carts Cart?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -50,8 +51,32 @@ model Product {
   categoryId  String  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
+  cartItems CartItem[]
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("products")
+}
+
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique // Mỗi user chỉ có 1 giỏ hàng duy nhất
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+
+  @@unique([cartId, productId]) // Một sản phẩm không được xuất hiện 2 dòng trong 1 giỏ
+  @@map("cart_items")
 }
