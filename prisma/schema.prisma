@@ -29,3 +29,29 @@ model User {
 
   @@map("users") // Đổi tên bảng dưới DB thành 'users' viết thường số nhiều chuẩn DB
 }
+
+model Category{
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]  // Quan hệ 1-Nhiều: Một danh mục có nhiều sản phẩm
+
+  @@map("categories")
+}
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int      @default(0)
+  images      String[] // Lưu danh sách link ảnh dưới dạng mảng string
+  categoryId  String  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("products")
+}
