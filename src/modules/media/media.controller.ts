@@ -31,6 +31,7 @@ export class MediaController {
   })
   @UseInterceptors(FileInterceptor('file', { storage }))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log('file', file);
     if (!file) {
       throw new BadRequestException('Please upload a file!');
     }

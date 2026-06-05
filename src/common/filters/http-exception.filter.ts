@@ -43,6 +43,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       `URL: ${request.url} | Method: ${request.method} | Status: ${status} | Error: ${message}`,
       exception instanceof Error ? exception.stack : '',
     );
+    this.logger.error(JSON.stringify(exception, null, 2));
 
     // Trả về response lỗi chuẩn hóa cho Client
     response.status(status).json({

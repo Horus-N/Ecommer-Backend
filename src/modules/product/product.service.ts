@@ -11,7 +11,17 @@ export class ProductService {
     });
   }
 
+  async update(id: string, dto: CreateProductDto) {
+    return this.prismaService.product.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
   async findAll() {
+    console.log('====================================');
+    console.log('miss redis');
+    console.log('====================================');
     return this.prismaService.product.findMany({
       include: {
         category: true,
