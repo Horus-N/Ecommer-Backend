@@ -12,7 +12,9 @@ import { MediaModule } from './modules/media/media.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { CartModule } from './modules/cart/cart.module';
-
+import { OrderModule } from './modules/order/order.module';
+import { BullModule } from '@nestjs/bullmq';
+import { MailModule } from './modules/mail/mail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +33,15 @@ import { CartModule } from './modules/cart/cart.module';
         }),
       }),
     }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get('REDIS_HOST'),
+          port: parseInt(configService.get('REDIS_PORT') || '6379', 10),
+        },
+      }),
+    }),
     PrismaModule,
     HealthModule,
     UserModule,
@@ -39,6 +50,8 @@ import { CartModule } from './modules/cart/cart.module';
     ProductModule,
     MediaModule,
     CartModule,
+    OrderModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

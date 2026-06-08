@@ -24,6 +24,7 @@ model User {
   phone     String?
   role      Role     @default(CUSTOMER)
   carts Cart?
+  orders Order[]
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -52,6 +53,7 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   cartItems CartItem[]
+  orderItems OrderItem[]
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("products")
@@ -79,4 +81,39 @@ model CartItem {
 
   @@unique([cartId, productId]) // Một sản phẩm không được xuất hiện 2 dòng trong 1 giỏ
   @@map("cart_items")
+}
+
+
+enum OrderStatus {
+  PENDING     // Chờ thanh toán / Chờ xử lý
+  PROCESSING  // Đang xử lý
+  SHIPPED     // Đang giao hàng
+  DELIVERED   // Đã giao hàng
+  CANCELLED   // Đã hủy
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  totalAmount Float       // Tổng tiền đơn hàng
+  status      OrderStatus @default(PENDING)
+  address     String      // Địa chỉ giao hàng
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  items       OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float    // Lưu lại giá tại thời điểm mua (phòng trường hợp sau này sản phẩm tăng/giảm giá)
+
+  @@map("order_items")
 }
