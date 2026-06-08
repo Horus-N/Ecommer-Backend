@@ -4,10 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async createOrder(userId: string, address: string) {
     // 1. Lấy giỏ hàng hiện tại của User
@@ -29,7 +33,7 @@ export class OrderService {
     );
 
     // 2. Kích hoạt ACID Transaction của Prisma
-    return this.prisma.$transaction(async (tx) => {
+    const order = await this.prisma.$transaction(async (tx) => {
       // Bước A: Tạo bản ghi Đơn hàng tổng
       const order = await tx.order.create({
         data: {
@@ -79,6 +83,16 @@ export class OrderService {
 
       return order;
     });
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (user?.email) {
+      await this.mailService.queueOrderConfirmationEmail(
+        user.email,
+        order.id,
+        order.totalAmount,
+      );
+    }
+
+    return order;
   }
 
   async getMyOrders(userId: string) {

@@ -10,6 +10,7 @@ import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @ApiTags('Order Management')
 @Controller('orders')
@@ -22,7 +23,9 @@ export class OrderController {
   @ApiOperation({
     summary: 'Tiến hành đặt hàng từ giỏ hàng hiện tại (Xử lý Transaction)',
   })
-  async checkout(@CurrentUser() user: any, @Body() body: { address: string }) {
+  async checkout(@CurrentUser() user: any, @Body() body: CreateOrderDto) {
+    console.log('address, ', body.address);
+
     if (!body.address)
       throw new BadRequestException('Địa chỉ giao hàng không được để trống!');
     return this.orderService.createOrder(user.userId, body.address);

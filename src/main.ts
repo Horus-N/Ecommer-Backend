@@ -17,6 +17,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // Tự động loại bỏ các thuộc tính không được định nghĩa trong DTO
       transform: true, // Tự động convert kiểu dữ liệu (Ví dụ: string số thành number)
+      enableDebugMessages: true,
     }),
   );
 
